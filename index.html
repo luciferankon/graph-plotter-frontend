@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="style.css" />
+
+		<script
+			src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"
+			integrity="sha256-VeNaFBVDhoX3H+gJ37DpT/nTuZTdjYro9yBruHjVmoQ="
+			crossorigin="anonymous"
+		></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js"
+			integrity="sha256-m0QmIsBXcOMiETRmpT3qg2IQ/i0qazJA2miCHzOmS1Y="
+			crossorigin="anonymous"
+		></script>
+		<script src="plot.js"></script>
+		<title>Graph</title>
+	</head>
+	<body>
+		<div style="display:flex">
+			<div id="graph">
+				<svg></svg>
+      </div>
+      <div>
+        <span> y= </span><input type="text" id="equation"/></span>
+        <button id="plot-button">Plot Graph</button>
+        <button id="reset-button">Clear Graph</button>
+      </div>
+		</div>
+	</body>
+</html>
