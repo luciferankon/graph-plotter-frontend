@@ -68,9 +68,11 @@ const visualize = () => {
 	plotGraph([]);
 	const plotButton = document.getElementById("plot-button");
 	const resetButton = document.getElementById("reset-button");
-	const equation = document.getElementById("equation");
+  const equation = document.getElementById("equation");
 	plotButton.onclick = () => {
-		fetchData(equation.value)
+    fetchData(equation.value)
+      .then(data => data.map(({x, y}) => [x, y]))
+      .then(data => data.filter(([_x,_y]) => isFinite(_y)))
 			.then(data => data.map(([_x, _y]) => [x(_x), y(_y)]))
       .then(plotGraph);
   };
