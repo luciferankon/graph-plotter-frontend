@@ -13,7 +13,8 @@ const y = d3
 	.range([10, height - 10]);
 
 const fetchData = async equation => {
-	const response = await fetch("http://localhost:3000", {
+  showMessage("Fetching Data...");
+	const response = await fetch("https://math-exp.herokuapp.com", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -61,22 +62,31 @@ const plotGraph = data => {
 };
 
 const clearGraph = () => {
-	d3.select(".line").remove();
+	d3.selectAll(".line").remove();
+};
+
+const showMessage = message => {
+	d3.select("#message").text(message);
 };
 
 const visualize = () => {
 	plotGraph([]);
 	const plotButton = document.getElementById("plot-button");
 	const resetButton = document.getElementById("reset-button");
-  const equation = document.getElementById("equation");
+	const equation = document.getElementById("equation");
 	plotButton.onclick = () => {
-    fetchData(equation.value)
-      .then(data => data.map(({x, y}) => [x, y]))
-      .then(data => data.filter(([_x,_y]) => isFinite(_y)))
+		fetchData(equation.value)
+			.then(data => {
+				showMessage("Done!");
+				return data;
+			})
+			.then(data => data.map(({ x, y }) => [x, y]))
+			.then(data => data.filter(([_x, _y]) => isFinite(_y)))
 			.then(data => data.map(([_x, _y]) => [x(_x), y(_y)]))
-      .then(plotGraph);
-  };
-  resetButton.onclick = clearGraph;
+			.then(plotGraph)
+			.catch(() => showMessage("Something failed!"));
+	};
+	resetButton.onclick = clearGraph;
 };
 
 window.onload = visualize;
