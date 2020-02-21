@@ -9,20 +9,6 @@ const colors = d3.scaleOrdinal(d3.schemeCategory10);
 
 const skipZero = x => (x == 0 ? '' : x);
 
-const lines = [];
-
-const x = width =>
-  d3
-    .scaleLinear()
-    .domain([-5, 5])
-    .range([10, width - 10]);
-
-const y = height =>
-  d3
-    .scaleLinear()
-    .domain([5, -5])
-    .range([10, height - 10]);
-
 const fetchData = async equation => {
   showMessage('Fetching Data...');
   const response = await fetch('https://math-exp.herokuapp.com', {
@@ -38,11 +24,22 @@ const fetchData = async equation => {
 const initGraph = () => {
   const svg = d3.select('#graph svg');
   const g = svg.append('g').attr('class', 'grapher');
-  g.append('g').attr('class', 'x-axis');
   g.append('g').attr('class', 'y-axis');
+  g.append('g').attr('class', 'x-axis');
 };
 
-const plotGraph = ({ width, height }) => {
+const plotGraph = () => {
+  const { width, height } = getGraphDimensions();
+  const x = d3
+    .scaleLinear()
+    .domain([-5, 5])
+    .range([10, width - 10]);
+
+  const y = d3
+    .scaleLinear()
+    .domain([5, -5])
+    .range([10, height - 10]);
+
   const svg = d3
     .select('#graph svg')
     .attr('width', width)
@@ -53,87 +50,89 @@ const plotGraph = ({ width, height }) => {
   g.select('.y-axis').attr('transform', `translate(${width / 2}, 0)`);
 
   const yAxis = d3
-    .axisLeft(y(height))
-    .ticks(11)
+    .axisLeft(y)
+    .ticks(20)
     .tickFormat(skipZero);
+
+  g.select('.y-axis').call(yAxis);
+  g.selectAll('.y-axis .tick line')
+    .attr('x1', -x.range()[1])
+    .attr('x2', x.range()[1]);
 
   const xAxis = d3
-    .axisBottom(x(width))
-    .ticks(11)
+    .axisBottom(x)
+    .ticks(20)
     .tickFormat(skipZero);
 
-  svg.select('.x-axis').call(xAxis);
-  svg.select('.y-axis').call(yAxis);
+  g.select('.x-axis').call(xAxis);
+  g.selectAll('.x-axis .tick line')
+    .attr('y1', -y.range()[1])
+    .attr('y2', y.range()[1]);
 
-	const line = d3.line().context(null);
-	const equations = g.selectAll('.line').data(_equations);
-	equations.exit().remove();
-	
-	equations.enter().append('path')
+  const equationPath = e =>
+    d3.line()(e.coordinates.map(([_x, _y]) => [x(_x), y(_y)]));
+
+  const equations = g.selectAll('.line').data(_equations);
+  equations.exit().remove();
+
+  equations
+    .enter()
+    .append('path')
     .attr('class', 'line')
-    .attr('d', e => line(e.coordinates))
-    .attr('stroke', (e,i)=>colors(i))
-    .attr('fill', 'none');
+    .attr('stroke', (e, i) => colors(i))
+    .attr('fill', 'none')
+    .attr('stroke-width', '2px')
+    .merge(equations)
+    .attr('d', equationPath);
 };
 
 const clearGraph = () => {
-	_.remove(_equations,_.identity);
-	updateEquations();
-	plotGraph(getGraphDimensions());
+  _.remove(_equations, _.identity);
+  updateEquations();
+  plotGraph();
 };
 
 const showMessage = message => {
   d3.select('#message').text(message);
 };
-const readEquation = ()=>document.querySelector('#equation').value;
-const generateCoordinates = (equation, {width, height})=>{
-	
-	return fetchData(equation)
-	.then(data => {
-		showMessage('Done!');
-		return data;
-	})
-	.then(data => data.map(({ x, y }) => [x, y]))
-	.then(data => data.filter(([_x, _y]) => isFinite(_y)))
-	.then(data => {
-		lines.push(data.slice());
-		return data;
-	})
-	.then(data =>
-		data.map(([_x, _y]) => [
-			x(width)(_x),
-			y(height)(_y)
-		])
-	)
-	.catch(error => showMessage('Something failed!' + error.toString()));
-}
-const updateEquations = ()=>{
-	const equations = d3.select('#equations')
-	.selectAll('.equation')
-	.data(_equations);
+const readEquation = () => document.querySelector('#equation').value;
+const generateCoordinates = equation => {
+  return fetchData(equation)
+    .then(data => {
+      showMessage('Done!');
+      return data;
+    })
+    .then(data => data.map(({ x, y }) => [x, y]))
+    .then(data => data.filter(([_x, _y]) => isFinite(_y)))
+    .catch(error => showMessage('Something failed!' + error.toString()));
+};
+const updateEquations = () => {
+  const equations = d3
+    .select('#equations')
+    .selectAll('.equation')
+    .data(_equations);
 
-	equations.exit().remove();
+  equations.exit().remove();
 
-		equations.enter()
-		.append('div')
-			.attr('class','equation')
-			.style('color', (e,i)=>colors(i))
-			.text(e=>e.equation);
-}
+  equations
+    .enter()
+    .append('div')
+    .attr('class', 'equation')
+    .style('color', (e, i) => colors(i))
+    .text(e => e.equation);
+};
 let _equations = [];
 const onPlotClick = () => {
-	const dimensions = getGraphDimensions();
-	const equation = readEquation();
-	generateCoordinates(equation,dimensions).then(coordinates=>{
-		_equations.push({equation,coordinates});
-		updateEquations();
-		plotGraph(dimensions);
-	});
+  const equation = readEquation();
+  generateCoordinates(equation).then(coordinates => {
+    _equations.push({ equation, coordinates });
+    updateEquations();
+    plotGraph();
+  });
 };
 
-const visualize = data => {
-  const dimensions = getGraphDimensions();
-  plotGraph(dimensions, data);
+const visualize = () => {
+  plotGraph();
   const plotButton = document.getElementById('plot-button');
   const resetButton = document.getElementById('reset-button');
   plotButton.onclick = onPlotClick;
@@ -142,15 +141,7 @@ const visualize = data => {
 
 window.onload = () => {
   initGraph();
-  visualize([]);
+  visualize();
 };
 
-window.onresize = () => {
-  const dimensions = getGraphDimensions();
-  const rangeLines = lines.map(line => {
-    return line.map(([_x, _y]) => [x(dimensions.width)(_x), y(dimensions.height)(_y)]);
-	});
-	
-  console.log(rangeLines);
-  rangeLines.forEach(line => visualize(line));
-};
+window.onresize = plotGraph;
