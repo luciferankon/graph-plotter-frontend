@@ -19,15 +19,16 @@
 		<title>Graph</title>
 	</head>
 	<body>
-		<div style="display:flex">
-			<div id="graph">
-				<svg></svg>
-      </div>
+		<div class="main-container">
       <div>
         <h3 id="message">Welcome to Graph Plotter</h3>
         <span> Equation : </span><input type="text" id="equation"/></span>
-        <button id="plot-button">Plot Graph</button>
+				<button id="plot-button">Plot Graph</button>
+				<div id="equations"></div>
         <button id="reset-button">Clear Graph</button>
+			</div>
+			<div id="graph" class="full-screen">
+				<svg class="full-screen"></svg>
       </div>
 		</div>
 	</body>

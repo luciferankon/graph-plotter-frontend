@@ -1,3 +1,22 @@
 svg {
   border: 1px solid black;
 }
+
+html, body{ 
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+.main-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+#graph{
+  align-self: center;
+}
+#equations{
+  padding: 10px;
+}
