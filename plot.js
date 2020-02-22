@@ -25,7 +25,19 @@ const initGraph = () => {
   const svg = d3.select('#graph svg');
   const g = svg.append('g').attr('class', 'grapher');
   g.append('g').attr('class', 'y-axis');
-  g.append('g').attr('class', 'x-axis');
+	g.append('g').attr('class', 'x-axis');
+	g.append('line').attr('class', 'y-axis-line');
+};
+
+const bringYAxisToFront = (height) => {
+  const yAxis = d3.select('#graph svg .grapher .y-axis');
+  const domainLine = yAxis.select('.domain');
+	const transformation = yAxis.attr('transform');
+	domainLine.remove();
+  d3.select('.grapher .y-axis-line')
+		.attr('y1', 0)
+		.attr('y2', height)
+		.attr('transform', transformation)
 };
 
 const plotGraph = () => {
@@ -67,7 +79,7 @@ const plotGraph = () => {
   g.select('.x-axis').call(xAxis);
   g.selectAll('.x-axis .tick line')
     .attr('y1', -y.range()[1])
-    .attr('y2', y.range()[1]);
+		.attr('y2', y.range()[1]);
 
   const equationPath = e =>
     d3.line()(e.coordinates.map(([_x, _y]) => [x(_x), y(_y)]));
@@ -83,7 +95,9 @@ const plotGraph = () => {
     .attr('fill', 'none')
     .attr('stroke-width', '2px')
     .merge(equations)
-    .attr('d', equationPath);
+		.attr('d', equationPath);
+		
+	bringYAxisToFront(height);
 };
 
 const clearGraph = () => {
