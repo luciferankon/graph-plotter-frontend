@@ -10,11 +10,12 @@ const MESSAGE_CLASSES = { error: 'error', success: 'success', info: 'info' };
 const showMessage = (message, type, life) => {
   const messageBar = document.querySelector('#message-bar');
   messageBar.innerText = message;
-  messageBar.style.display = 'flex';
+  messageBar.style.height = '6%';
   messageBar.setAttribute('class', MESSAGE_CLASSES[type]);
   if (life == MESSAGE_LIFE_LONG) return;
 
   setTimeout(() => {
-    messageBar.style.display = 'none';
+    messageBar.style.height = '0';
+    messageBar.innerText = '';
   }, life);
 };
