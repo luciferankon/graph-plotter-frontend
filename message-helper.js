@@ -2,7 +2,7 @@ const MESSAGE_TYPE_ERROR = 'error';
 const MESSAGE_TYPE_SUCCESS = 'success';
 const MESSAGE_TYPE_INFO = 'info';
 
-const MESSAGE_LIFE_SHORT = 3000;
+const MESSAGE_LIFE_SHORT = 2000;
 const MESSAGE_LIFE_LONG = 0;
 
 const MESSAGE_CLASSES = { error: 'error', success: 'success', info: 'info' };
