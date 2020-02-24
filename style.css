@@ -8,6 +8,7 @@ html, body{
   margin: 0px;
   color: whitesmoke;
   background: #2d3436;
+  font-family: 'Asap', 'Courier New', Courier, monospace;
 }
 
 .main-container {
@@ -59,12 +60,39 @@ button{
   border: none;
   color: rgb(231, 231, 231);
   border-radius: 2px;
+  cursor: pointer;
 }
 
 #equations{
   height: 70%;
   overflow: scroll;
   border: 1px solid rgb(100, 100, 100);
+}
+
+#message-bar{
+  height: 6%;
+  box-sizing: border-box;
+  width: 100%;
+  z-index: 1;
+  position: absolute;
+
+  display: none;
+  align-items: center;
+  padding: 0px 8px;
+
+  font-size: 18px;
+}
+
+#message-bar.error{
+  background-color: rgb(245, 74, 89);
+}
+
+#message-bar.success{
+  background-color: #00b894;
+}
+
+#message-bar.info{
+  background-color: rgb(57, 179, 250);
 }
 
 .sidebar{
